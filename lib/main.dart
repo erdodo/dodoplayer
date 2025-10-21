@@ -1,4 +1,5 @@
 import 'package:dodoplayer/apis/tmdb.dart';
+import 'package:dodoplayer/widgets/Carousel.dart';
 import 'package:dodoplayer/widgets/MoviesRow.dart';
 import 'package:dodoplayer/widgets/TVRow.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,35 @@ class _MyHomePageState extends State<MyHomePage> {
           return SingleChildScrollView(
             child: Column(
               children: [
+                FutureBuilder(
+                  future: TMDB().getPopularMovies(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    } else {
+                      return Carousel(
+                        items:
+                            snapshot.data?.results
+                                .map(
+                                  (movie) => CarouselItem(
+                                    id: movie.id,
+                                    imageUrl:
+                                        'https://image.tmdb.org/t/p/w500${movie.poster_path}',
+                                    title: movie.title,
+                                  ),
+                                )
+                                .toList() ??
+                            [],
+                        onWatch: (id) {
+                          print('İzle butonuna tıklandı');
+                          print(id);
+                        },
+                      );
+                    }
+                  },
+                ),
                 FutureBuilder(
                   future: TMDB().getPopularMovies(),
                   builder: (context, snapshot) {
