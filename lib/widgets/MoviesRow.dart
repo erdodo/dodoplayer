@@ -1,4 +1,4 @@
-import 'package:dodoplayer/models/Movies.dart';
+import 'package:dodoplayer/models/IMovies.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/movies/MovieDetail.dart';

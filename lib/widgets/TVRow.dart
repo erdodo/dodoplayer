@@ -1,4 +1,5 @@
-import 'package:dodoplayer/models/TVSeries.dart';
+import 'package:dodoplayer/models/ITVSeries.dart';
+import 'package:dodoplayer/pages/tvseries/TVDetail.dart';
 import 'package:flutter/material.dart';
 
 class TVrow extends StatefulWidget {
@@ -50,7 +51,11 @@ class _TVrowState extends State<TVrow> {
                       ),
                     ),
                     onPressed: () {
-                      print('Movie ID: ${movie.id}, Title: ${movie.name}');
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return TVDetail(tvId: movie.id ?? 0);
+                        },
+                      ));
                     },
                     child: Container(
                       decoration: BoxDecoration(

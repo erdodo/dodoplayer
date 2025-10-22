@@ -1,31 +1,31 @@
 import 'package:dodoplayer/apis/tmdb.dart';
-import 'package:dodoplayer/models/IMovieDetail.dart';
-import 'package:dodoplayer/widgets/MoviesRow.dart';
+import 'package:dodoplayer/models/ITVDetail.dart';
+import 'package:dodoplayer/pages/tvseries/SeasonDetail.dart';
 import 'package:flutter/material.dart';
 
-class MovieDetail extends StatefulWidget {
-  const MovieDetail({super.key, required this.movieId});
+class TVDetail extends StatefulWidget {
+  const TVDetail({super.key, required this.tvId});
 
-  final int movieId;
+  final int tvId;
 
   @override
-  State<MovieDetail> createState() => _MovieDetailState(movieId: this.movieId);
+  State<TVDetail> createState() => _TVDetailState(tvId: this.tvId);
 }
 
-class _MovieDetailState extends State<MovieDetail> {
-  final int movieId;
+class _TVDetailState extends State<TVDetail> {
+  final int tvId;
   late Color color = Colors.grey;
-  IMovieDetail? movieDetail;
+  ITvShowDetail? tvDetail;
 
-  _MovieDetailState({this.movieId = 0});
+  _TVDetailState({this.tvId = 0});
 
   getMovieDetail() async {
-    this.movieDetail = await TMDB().getMovieDetail(movieId);
-    var snapshot = this.movieDetail;
+    this.tvDetail = await TMDB().getTVDetail(tvId);
+    var snapshot = this.tvDetail;
     this.color =
         (snapshot!.vote_average >= 7.0
                 ? Colors.green
-                : (snapshot.vote_average ?? 0) >= 4.0
+                : (snapshot.vote_average) >= 4.0
                 ? Colors.orange
                 : Colors.red)
             as Color;
@@ -63,7 +63,7 @@ class _MovieDetailState extends State<MovieDetail> {
                         ),
                         height: 240,
                         child: Image.network(
-                          'https://image.tmdb.org/t/p/w500${movieDetail?.backdrop_path ?? ''}',
+                          'https://image.tmdb.org/t/p/w500${tvDetail?.backdrop_path ?? ''}',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -73,7 +73,7 @@ class _MovieDetailState extends State<MovieDetail> {
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
                         child: Text(
-                          movieDetail?.title ?? '',
+                          tvDetail?.name ?? '',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -88,7 +88,7 @@ class _MovieDetailState extends State<MovieDetail> {
                             alignment: Alignment.centerLeft,
                             padding: EdgeInsets.fromLTRB(8, 0, 0, 4),
                             child: Text(
-                              '${movieDetail?.release_date.split('-')[0] ?? ''}',
+                              '${tvDetail?.first_air_date.split('-')[0] ?? ''}',
                               style: TextStyle(fontSize: 14),
                             ),
                           ),
@@ -100,7 +100,7 @@ class _MovieDetailState extends State<MovieDetail> {
                                 Icon(Icons.star, color: this.color, size: 14),
                                 SizedBox(width: 4),
                                 Text(
-                                  '${movieDetail?.vote_average.toStringAsFixed(1) ?? ''}',
+                                  '${tvDetail?.vote_average.toStringAsFixed(1) ?? ''}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: this.color,
@@ -174,7 +174,7 @@ class _MovieDetailState extends State<MovieDetail> {
                             child: Wrap(
                               spacing: 8,
                               runSpacing: 8,
-                              children: movieDetail!.genres.map((genre) {
+                              children: tvDetail!.genres.map((genre) {
                                 return Container(
                                   padding: EdgeInsets.fromLTRB(6, 2, 6, 2),
                                   decoration: BoxDecoration(
@@ -223,13 +223,13 @@ class _MovieDetailState extends State<MovieDetail> {
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.all(8),
                         child: Text(
-                          movieDetail?.overview ?? '',
+                          tvDetail?.overview ?? '',
                           style: TextStyle(fontSize: 12),
                         ),
                       ),
 
                       //Yapım Şirketleri
-                      Scrollable(
+                      /* Scrollable(
                         viewportBuilder: (context, position) {
                           return SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -238,7 +238,7 @@ class _MovieDetailState extends State<MovieDetail> {
                               alignment: Alignment.centerLeft,
 
                               child: Row(
-                                children: movieDetail!.production_companies.map((
+                                children: tvDetail!.production_companies.map((
                                   genre,
                                 ) {
                                   return Container(
@@ -268,9 +268,10 @@ class _MovieDetailState extends State<MovieDetail> {
                           );
                         },
                       ),
+*/
 
-                      FutureBuilder(
-                        future: TMDB().getMovieSimilar(movieId),
+                      /*FutureBuilder(
+                        future: TMDB().getMovieSimilar(tvId),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -278,13 +279,15 @@ class _MovieDetailState extends State<MovieDetail> {
                           } else if (snapshot.hasError) {
                             return Text(snapshot.error.toString());
                           } else {
-                            return Moviesrow(
-                              results: snapshot.data?.results ?? [],
-                              title: 'Benzer Filmler',
-                            );
+                            return Text("Benzerler")
                           }
                         },
+                      ),*/
+                      SeasonDetail(
+                        tvId: this.tvId,
+                        season: tvDetail?.seasons ?? [],
                       ),
+
                       Container(height: 100),
                     ],
                   ),
