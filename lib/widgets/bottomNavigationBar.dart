@@ -32,7 +32,9 @@ class _BottomBarNavigationState extends State<BottomBarNavigation> {
         context,
       ).pushNamedAndRemoveUntil('/favorites', (route) => false);
     } else if (index == 2) {
-      // Arama sayfasına yönlendirme
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil('/search', (route) => false);
+
     } else if (index == 3) {
       // Profil sayfasına yönlendirme
     }

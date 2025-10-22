@@ -1,6 +1,7 @@
 import 'package:dodoplayer/AuthCheck.dart';
 import 'package:dodoplayer/HomePage.dart';
 import 'package:dodoplayer/pages/favorites/Favorites.dart';
+import 'package:dodoplayer/pages/search/Search.dart';
 import 'package:dodoplayer/pages/sign/LoginPage.dart';
 import 'package:dodoplayer/providers/GlobalProvider.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const MyHomePage(title: 'ErdoFlix'),
         '/favorites': (context) => const FavoritesPage(),
+        '/search': (context) => const SearchPage(),
       },
       home: const AuthCheck(),
     );
