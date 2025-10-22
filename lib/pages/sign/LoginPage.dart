@@ -1,6 +1,6 @@
 import 'package:dodoplayer/apis/n8n.dart';
 import 'package:dodoplayer/models/IProfile.dart';
-import 'package:dodoplayer/providers/FavoritesProvider.dart';
+import 'package:dodoplayer/providers/GlobalProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
 
       // Favorileri yükle
       if (mounted) {
-        final favoritesProvider = Provider.of<FavoritesProvider>(
+        final favoritesProvider = Provider.of<GlobalProvider>(
             context, listen: false);
         await favoritesProvider.loadFavorites(profile.username!);
         print('Favoriler yüklendi');

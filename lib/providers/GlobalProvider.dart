@@ -2,14 +2,15 @@ import 'package:dodoplayer/apis/n8n.dart';
 import 'package:dodoplayer/models/IFavorite.dart';
 import 'package:flutter/material.dart';
 
-class FavoritesProvider extends ChangeNotifier {
+class GlobalProvider extends ChangeNotifier {
   List<IFavorite> _favorites = [];
   bool _isLoading = false;
   String? _username;
-
   List<IFavorite> get favorites => _favorites;
-
   bool get isLoading => _isLoading;
+
+  int activePageIndex = 0;
+
 
   // Kullanıcı adını ayarla
   void setUsername(String username) {
@@ -80,7 +81,7 @@ class FavoritesProvider extends ChangeNotifier {
           fav.tmdb == tmdbId
       );
       // API'den silme işlemi varsa buraya eklenebilir
-      await N8N().removeFavorite(fav.first?.row_number ?? 0, _username!);
+      await N8N().removeFavorite(fav.first.row_number ?? 0, _username!);
       // Listeden çıkar
       _favorites.removeWhere(
         (fav) =>
@@ -109,6 +110,11 @@ class FavoritesProvider extends ChangeNotifier {
   void clearFavorites() {
     _favorites = [];
     _username = null;
+    notifyListeners();
+  }
+
+  void setActivePageIndex(int index) {
+    activePageIndex = index;
     notifyListeners();
   }
 }

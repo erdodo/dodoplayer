@@ -1,6 +1,6 @@
 import 'package:dodoplayer/apis/tmdb.dart';
 import 'package:dodoplayer/models/IMovieDetail.dart';
-import 'package:dodoplayer/providers/FavoritesProvider.dart';
+import 'package:dodoplayer/providers/GlobalProvider.dart';
 import 'package:dodoplayer/widgets/MoviesRow.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +27,7 @@ class _MovieDetailState extends State<MovieDetail> {
     this.color =
         (snapshot!.vote_average >= 7.0
                 ? Colors.green
-                : (snapshot.vote_average ?? 0) >= 4.0
+                : (snapshot.vote_average) >= 4.0
                 ? Colors.orange
                 : Colors.red)
             as Color;
@@ -201,7 +201,7 @@ class _MovieDetailState extends State<MovieDetail> {
                             children: [
                               //favoriye ekle, listeye ekle, paylaş
                               Container(
-                                child: Consumer<FavoritesProvider>(
+                                child: Consumer<GlobalProvider>(
                                   builder: (context, favoritesProvider, child) {
                                     final isFavorite = favoritesProvider
                                         .isFavorite(movieId, true);
