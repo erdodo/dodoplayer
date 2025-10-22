@@ -27,10 +27,11 @@ class N8N {
     return IProfile.fromJson(jsonData);
   }
 
-  Future<void> addFavorite(int tmdbId, bool isMovie, String username) async {
+  Future<IFavorite> addFavorite(int tmdbId, bool isMovie, String username,
+      String image_path, String title) async {
     var type = isMovie ? 'film' : 'dizi';
     var url =
-        'https://n8n.erdoganyesil.org/webhook/erdoflix-favori-ekle?username=$username&tmdb=$tmdbId&$type=true';
+        'https://n8n.erdoganyesil.org/webhook/erdoflix-favori-ekle?username=$username&tmdb=$tmdbId&$type=true&image_path=$image_path&title=$title';
     var headers = {"accept": 'application/json'};
 
     var res = await http.get(Uri.parse(url), headers: headers);
@@ -38,6 +39,25 @@ class N8N {
     if (res.statusCode != 200) {
       throw Exception('Favori ekleme başarısız oldu');
     }
+    final jsonData = jsonDecode(res.body);
+    return IFavorite.fromJson(jsonData);
+  }
+
+  Future<IFavorite> removeFavorite(int row_number, String username) async {
+    if (row_number <= 0) {
+      throw Exception('Geçersiz row_number değeri');
+    }
+    var url =
+        'https://n8n.erdoganyesil.org/webhook/erdoflix-favori-kaldir?username=$username&row_number=$row_number';
+    var headers = {"accept": 'application/json'};
+
+    var res = await http.get(Uri.parse(url), headers: headers);
+
+    if (res.statusCode != 200) {
+      throw Exception('Favori ekleme başarısız oldu');
+    }
+    final jsonData = jsonDecode(res.body);
+    return IFavorite.fromJson(jsonData);
   }
 
   Future<List<IFavorite>> getFavorites(String username) async {

@@ -1,6 +1,8 @@
 import 'package:dodoplayer/apis/n8n.dart';
 import 'package:dodoplayer/models/IProfile.dart';
+import 'package:dodoplayer/providers/FavoritesProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -60,6 +62,14 @@ class _LoginPageState extends State<LoginPage> {
 
       await _saveUserProfile(profile);
       print('Profil kaydedildi');
+
+      // Favorileri yükle
+      if (mounted) {
+        final favoritesProvider = Provider.of<FavoritesProvider>(
+            context, listen: false);
+        await favoritesProvider.loadFavorites(profile.username!);
+        print('Favoriler yüklendi');
+      }
 
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/home');

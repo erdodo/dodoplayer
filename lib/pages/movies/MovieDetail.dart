@@ -1,7 +1,9 @@
 import 'package:dodoplayer/apis/tmdb.dart';
 import 'package:dodoplayer/models/IMovieDetail.dart';
+import 'package:dodoplayer/providers/FavoritesProvider.dart';
 import 'package:dodoplayer/widgets/MoviesRow.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MovieDetail extends StatefulWidget {
   const MovieDetail({super.key, required this.movieId});
@@ -63,7 +65,7 @@ class _MovieDetailState extends State<MovieDetail> {
                         ),
                         height: 240,
                         child: Image.network(
-                          'https://image.tmdb.org/t/p/w500${movieDetail?.backdrop_path ?? ''}',
+                          'https://image.tmdb.org/t/p/w500${movieDetail?.backdrop_path ?? movieDetail?.poster_path ?? ''}',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -198,11 +200,30 @@ class _MovieDetailState extends State<MovieDetail> {
 
                             children: [
                               //favoriye ekle, listeye ekle, paylaş
-                              IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.favorite_border,
-                                  color: Colors.white,
+                              Container(
+                                child: Consumer<FavoritesProvider>(
+                                  builder: (context, favoritesProvider, child) {
+                                    final isFavorite = favoritesProvider
+                                        .isFavorite(movieId, true);
+                                    return IconButton(
+                                      onPressed: () {
+                                        favoritesProvider.toggleFavorite(
+                                          movieId,
+                                          true,
+                                          movieDetail?.backdrop_path ?? '',
+                                          movieDetail?.title ?? '',
+                                        );
+                                      },
+                                      icon: Icon(
+                                        isFavorite
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: isFavorite
+                                            ? Colors.red
+                                            : Colors.white,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                               IconButton(

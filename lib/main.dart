@@ -2,19 +2,26 @@ import 'package:dodoplayer/apis/n8n.dart';
 import 'package:dodoplayer/apis/tmdb.dart';
 import 'package:dodoplayer/pages/movies/MovieDetail.dart';
 import 'package:dodoplayer/pages/sign/LoginPage.dart';
+import 'package:dodoplayer/providers/FavoritesProvider.dart';
 import 'package:dodoplayer/widgets/Carousel.dart';
+import 'package:dodoplayer/widgets/FavoritesRow.dart';
 import 'package:dodoplayer/widgets/MoviesRow.dart';
 import 'package:dodoplayer/widgets/TVRow.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => FavoritesProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +80,19 @@ class _AuthCheckState extends State<AuthCheck> {
 
       print('Login durumu: $isLoggedIn');
 
+      // Eğer kullanıcı giriş yapmışsa favorileri yükle
+      if (isLoggedIn && mounted) {
+        final username = prefs.getString('username');
+        if (username != null && username.isNotEmpty) {
+          final favoritesProvider = Provider.of<FavoritesProvider>(
+            context,
+            listen: false,
+          );
+          await favoritesProvider.loadFavorites(username);
+          print('Favoriler otomatik yüklendi');
+        }
+      }
+
       if (mounted) {
         setState(() {
           _isLoggedIn = isLoggedIn;
@@ -95,9 +115,7 @@ class _AuthCheckState extends State<AuthCheck> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(color: Colors.red),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }
 
@@ -106,8 +124,6 @@ class _AuthCheckState extends State<AuthCheck> {
         : const LoginPage();
   }
 }
-
-
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -119,13 +135,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
-    SharedPreferences.getInstance().then((value) =>
-    {
-      N8N().getFavorites(value.getString('username') ?? '')
-    });  
+    SharedPreferences.getInstance().then(
+      (value) => {N8N().getFavorites(value.getString('username') ?? '')},
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -161,14 +175,29 @@ class _MyHomePageState extends State<MyHomePage> {
                         onWatch: (id) {
                           print('İzle butonuna tıklandı');
                           print(id);
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => MovieDetail(movieId: id),));
-
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MovieDetail(movieId: id),
+                            ),
+                          );
                         },
                       );
                     }
                   },
                 ),
+                Consumer<FavoritesProvider>(
+                  builder: (context, favoritesProvider, child) {
+                    if (favoritesProvider.favorites.isNotEmpty) {
+                      return Favoritesrow(
+                        results: favoritesProvider.favorites,
+                        title: "Favoriler",
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
+
                 FutureBuilder(
                   future: TMDB().getPopularMovies(),
                   builder: (context, snapshot) {

@@ -43,19 +43,23 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   // Favorilere ekle
-  Future<void> addFavorite(int tmdbId, bool isMovie) async {
+  Future<void> addFavorite(int tmdbId, bool isMovie, String image_path,
+      String title) async {
     if (_username == null) return;
 
     try {
-      await N8N().addFavorite(tmdbId, isMovie, _username!);
+      var added = await N8N().addFavorite(
+          tmdbId, isMovie, _username!, image_path, title);
 
-      // Listeye ekle
       _favorites.add(
         IFavorite(
           kullanici: _username,
           tmdb: tmdbId,
           film: isMovie,
           dizi: !isMovie,
+          row_number: added.row_number,
+          image_path: image_path,
+          title: title,
         ),
       );
 
@@ -71,8 +75,12 @@ class FavoritesProvider extends ChangeNotifier {
     if (_username == null) return;
 
     try {
+      var fav = _favorites.where(
+              (fav) =>
+          fav.tmdb == tmdbId
+      );
       // API'den silme işlemi varsa buraya eklenebilir
-
+      await N8N().removeFavorite(fav.first?.row_number ?? 0, _username!);
       // Listeden çıkar
       _favorites.removeWhere(
         (fav) =>
@@ -88,11 +96,12 @@ class FavoritesProvider extends ChangeNotifier {
   }
 
   // Toggle favori durumu
-  Future<void> toggleFavorite(int tmdbId, bool isMovie) async {
+  Future<void> toggleFavorite(int tmdbId, bool isMovie, String image_path,
+      String title) async {
     if (isFavorite(tmdbId, isMovie)) {
       await removeFavorite(tmdbId, isMovie);
     } else {
-      await addFavorite(tmdbId, isMovie);
+      await addFavorite(tmdbId, isMovie, image_path, title);
     }
   }
 
